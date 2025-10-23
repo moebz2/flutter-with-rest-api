@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'lista_item.dart';
+import 'error_msg.dart';
 
 void main() {
   runApp(const MyApp());
@@ -178,7 +180,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pokémon List'),
+        title: const Text('Lista de Pokemones'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -192,18 +194,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
 
   Widget _buildBody() {
     if (hasError && pokemonList.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            const Text('Failed to load Pokémon'),
-            const SizedBox(height: 16),
-            ElevatedButton(onPressed: _loadPokemon, child: const Text('Retry')),
-          ],
-        ),
-      );
+      return ErrorMsgWidget(onRetry: _loadPokemon);
     }
 
     if (isLoading && pokemonList.isEmpty) {
@@ -222,79 +213,9 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
         }
 
         final pokemon = pokemonList[index];
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.blue.shade100,
-              child: Text(
-                '#${pokemon.id}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            title: Text(
-              pokemon.name
-                  .split('-')
-                  .map((word) => word[0].toUpperCase() + word.substring(1))
-                  .join(' '),
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      PokemonDetailScreen(id: pokemon.id, name: pokemon.name),
-                ),
-              );
-            },
-          ),
-        );
+
+        return ListaItemWidget(name: pokemon.name, id: pokemon.id);
       },
-    );
-  }
-}
-
-class PokemonDetailScreen extends StatelessWidget {
-  final int id;
-  final String name;
-
-  const PokemonDetailScreen({super.key, required this.id, required this.name});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          name
-              .split('-')
-              .map((word) => word[0].toUpperCase() + word.substring(1))
-              .join(' '),
-        ),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            Text(
-              'Pokémon #$id',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            Text(
-              name
-                  .split('-')
-                  .map((word) => word[0].toUpperCase() + word.substring(1))
-                  .join(' '),
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
