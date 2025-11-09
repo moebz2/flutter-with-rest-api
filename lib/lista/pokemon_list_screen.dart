@@ -254,6 +254,8 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
         ],
       ),
       body: Column(
+        mainAxisAlignment:
+            MainAxisAlignment.start, // Change from center to start
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -266,15 +268,17 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                       hintText: 'Buscar por nombre',
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(),
-                      helperText: 'Ejemplo: pikachu, charmander',
                     ),
-                    onSubmitted: (_) => _performSearch(), // Search on Enter key
+                    onSubmitted: (_) => _performSearch(),
                   ),
                 ),
                 const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: _performSearch,
-                  child: const Text('Buscar'),
+                SizedBox(
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _performSearch,
+                    child: const Text('Buscar'),
+                  ),
                 ),
               ],
             ),
