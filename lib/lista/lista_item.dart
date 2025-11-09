@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../detalle/screen.dart';
+import '../detalle/pokemon_detail_screen.dart';
 import '../../utils/string_utils.dart';
 
 class ListaItemWidget extends StatelessWidget {

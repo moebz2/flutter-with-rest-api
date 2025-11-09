@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-
 import 'package:tp_pokemon/lista/pokemon_list_screen.dart';
 
 void main() {

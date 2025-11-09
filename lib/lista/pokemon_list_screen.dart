@@ -62,6 +62,9 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
     });
 
     try {
+      // Solo para hacer más evidente el estado de carga.
+      await Future.delayed(const Duration(seconds: 3));
+
       final response = await http.get(
         Uri.parse(
           'https://pokeapi.co/api/v2/pokemon?limit=$limit&offset=$currentOffset',
@@ -107,6 +110,11 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
     });
 
     try {
+      // Este delay es solamente para que sea más evidente
+      // el estado de Loading, es decir, que se pueda ver
+      // claramente que se está usando el CircularProgressIndicator
+      await Future.delayed(const Duration(seconds: 3));
+
       final response = await http.get(Uri.parse(nextUrl!));
 
       if (response.statusCode == 200) {
@@ -199,16 +207,6 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
           displayList = [];
           isLoading = false;
         });
-
-        // Show a snackbar with not found message
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Pokémon "$query" no encontrado'),
-              backgroundColor: Colors.orange,
-            ),
-          );
-        }
       } else {
         setState(() {
           hasError = true;
@@ -265,10 +263,10 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                   child: TextField(
                     controller: _searchController,
                     decoration: const InputDecoration(
-                      hintText: 'Buscar por nombre exacto o ID...',
+                      hintText: 'Buscar por nombre',
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(),
-                      helperText: 'Ejemplo: pikachu, 25, charmander',
+                      helperText: 'Ejemplo: pikachu, charmander',
                     ),
                     onSubmitted: (_) => _performSearch(), // Search on Enter key
                   ),
