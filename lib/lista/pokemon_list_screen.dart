@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:tp_pokemon/lista/empty_msg.dart';
 import 'dart:convert';
 
 import 'package:tp_pokemon/models/pokemon.dart';
@@ -7,6 +8,7 @@ import 'package:tp_pokemon/models/pokemon_list_response.dart';
 
 import 'lista_item.dart';
 import 'error_msg.dart';
+import 'loading_msg.dart';
 
 class PokemonListScreen extends StatefulWidget {
   const PokemonListScreen({super.key});
@@ -253,47 +255,49 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
           ),
         ],
       ),
-      body: _searchSection(),
+      body: _buildBody(),
     );
   }
 
-  Column _searchSection() {
+  Column _buildBody() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Buscar por nombre',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
-                  ),
-                  onSubmitted: (_) => _performSearch(),
-                ),
+      children: [_buildSearchSection(), _buildListWithRefresh()],
+    );
+  }
+
+  Expanded _buildListWithRefresh() {
+    return Expanded(
+      child: RefreshIndicator(onRefresh: _refreshPokemon, child: _buildList()),
+    );
+  }
+
+  Padding _buildSearchSection() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              decoration: const InputDecoration(
+                hintText: 'Buscar por nombre',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(width: 8),
-              SizedBox(
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _performSearch,
-                  child: const Text('Buscar'),
-                ),
-              ),
-            ],
+              onSubmitted: (_) => _performSearch(),
+            ),
           ),
-        ),
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: _refreshPokemon,
-            child: _buildList(),
+          const SizedBox(width: 8),
+          SizedBox(
+            height: 56,
+            child: ElevatedButton(
+              onPressed: _performSearch,
+              child: const Text('Buscar'),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -307,29 +311,11 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
     }
 
     if (isLoading && displayList.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return LoadingMsgWidget();
     }
 
     if (isSearchMode && displayList.isEmpty && !isLoading) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.search_off, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
-              'No se encontraron resultados',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Intenta buscar con el nombre exacto o ID del Pokémon',
-              style: TextStyle(color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
+      return EmptyMsgWidget();
     }
 
     // ListView.builder es scrolleable por defecto
