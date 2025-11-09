@@ -16,7 +16,7 @@ class PokemonListScreen extends StatefulWidget {
 
 class _PokemonListScreenState extends State<PokemonListScreen> {
   List<Pokemon> pokemonList = [];
-  List<Pokemon> filteredPokemonList = [];
+  List<Pokemon> displayList = [];
   bool isLoading = false;
   bool hasError = false;
   String? nextUrl;
@@ -24,6 +24,8 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   final int limit = 20;
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  bool isSearchMode = false;
+  Pokemon? searchResult;
 
   @override
   void initState() {
@@ -40,8 +42,11 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
+    debugPrint('_onScroll');
+
+    if (!isSearchMode &&
+        _scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200) {
       if (!isLoading && nextUrl != null) {
         _loadMorePokemon();
       }
@@ -49,6 +54,8 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   Future<void> _loadPokemon() async {
+    debugPrint('_loadPokemon.start');
+
     setState(() {
       isLoading = true;
       hasError = false;
@@ -70,9 +77,11 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
 
         setState(() {
           pokemonList = pokemonResponse.results;
-          filteredPokemonList = pokemonResponse.results;
+          displayList = pokemonResponse.results; // Show the loaded list
           nextUrl = pokemonResponse.next;
           isLoading = false;
+          isSearchMode = false; // Reset search mode
+          searchResult = null;
         });
       } else {
         setState(() {
@@ -89,7 +98,9 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   Future<void> _loadMorePokemon() async {
-    if (nextUrl == null) return;
+    debugPrint('_loadMorePokemon');
+
+    if (nextUrl == null || isSearchMode) return;
 
     setState(() {
       isLoading = true;
@@ -105,6 +116,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
 
         setState(() {
           pokemonList.addAll(pokemonResponse.results);
+          displayList.addAll(pokemonResponse.results);
           nextUrl = pokemonResponse.next;
           isLoading = false;
         });
@@ -121,33 +133,122 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   Future<void> _refreshPokemon() async {
+    debugPrint('_refreshPokemon');
+
     setState(() {
       pokemonList.clear();
+      displayList.clear();
       currentOffset = 0;
       nextUrl = null;
+      isSearchMode = false;
+      searchResult = null;
+      _searchController.clear();
     });
+
     await _loadPokemon();
   }
 
-  void _performSearch() {
-    final query = _searchController.text.toLowerCase();
+  Future<void> _performSearch() async {
+    debugPrint('_performSearch');
+
+    final query = _searchController.text.trim().toLowerCase();
+
+    if (query.isEmpty) {
+      // If search is empty, return to normal list view
+      setState(() {
+        isSearchMode = false;
+        displayList = pokemonList;
+        searchResult = null;
+      });
+      return;
+    }
+
     setState(() {
-      if (query.isEmpty) {
-        filteredPokemonList = pokemonList;
+      isLoading = true;
+      hasError = false;
+    });
+
+    try {
+      // Try to search by exact name or ID
+      final response = await http.get(
+        Uri.parse('https://pokeapi.co/api/v2/pokemon/$query'),
+      );
+
+      debugPrint('_performSearch.response: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final pokemonData = json.decode(response.body);
+
+        // Create a Pokemon object from the detailed response
+        final foundPokemon = Pokemon(
+          name: pokemonData['name'],
+          url: 'https://pokeapi.co/api/v2/pokemon/${pokemonData['id']}/',
+        );
+
+        setState(() {
+          isSearchMode = true;
+          searchResult = foundPokemon;
+          displayList = [foundPokemon]; // Show only the found pokemon
+          isLoading = false;
+        });
+      } else if (response.statusCode == 404) {
+        // Pokemon not found
+        setState(() {
+          isSearchMode = true;
+          searchResult = null;
+          displayList = [];
+          isLoading = false;
+        });
+
+        // Show a snackbar with not found message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Pokémon "$query" no encontrado'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
       } else {
-        filteredPokemonList = pokemonList
-            .where((pokemon) => pokemon.name.toLowerCase().contains(query))
-            .toList();
+        setState(() {
+          hasError = true;
+          isLoading = false;
+        });
       }
+    } catch (e) {
+      debugPrint('Search error: $e');
+      setState(() {
+        hasError = true;
+        isLoading = false;
+      });
+    }
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() {
+      isSearchMode = false;
+      displayList = pokemonList;
+      searchResult = null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('widgetBuild');
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista de Pokemones'),
+        title: Text(
+          isSearchMode ? 'Resultado de Búsqueda' : 'Lista de Pokemones',
+        ),
         actions: [
+          if (isSearchMode)
+            IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: _clearSearch,
+              tooltip: 'Limpiar búsqueda',
+            ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _refreshPokemon,
@@ -164,9 +265,10 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                   child: TextField(
                     controller: _searchController,
                     decoration: const InputDecoration(
-                      hintText: 'Buscar Pokemon...',
+                      hintText: 'Buscar por nombre exacto o ID...',
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(),
+                      helperText: 'Ejemplo: pikachu, 25, charmander',
                     ),
                     onSubmitted: (_) => _performSearch(), // Search on Enter key
                   ),
@@ -191,22 +293,46 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   Widget _buildList() {
-    if (hasError && pokemonList.isEmpty) {
-      return ErrorMsgWidget(onRetry: _loadPokemon);
+    debugPrint('_buildList');
+
+    if (hasError && displayList.isEmpty) {
+      return ErrorMsgWidget(
+        onRetry: isSearchMode ? _performSearch : _loadPokemon,
+      );
     }
 
-    if (isLoading && pokemonList.isEmpty) {
+    if (isLoading && displayList.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final displayList = filteredPokemonList;
-    final isFiltered = _searchController.text.isNotEmpty;
+    if (isSearchMode && displayList.isEmpty && !isLoading) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search_off, size: 64, color: Colors.grey),
+            SizedBox(height: 16),
+            Text(
+              'No se encontraron resultados',
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Intenta buscar con el nombre exacto o ID del Pokémon',
+              style: TextStyle(color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
 
     return ListView.builder(
       controller: _scrollController,
-      itemCount: displayList.length + (nextUrl != null && !isFiltered ? 1 : 0),
+      itemCount:
+          displayList.length + (!isSearchMode && nextUrl != null ? 1 : 0),
       itemBuilder: (context, index) {
-        if (index >= displayList.length && !isFiltered) {
+        if (index >= displayList.length && !isSearchMode) {
           return const Padding(
             padding: EdgeInsets.all(16.0),
             child: Center(child: CircularProgressIndicator()),

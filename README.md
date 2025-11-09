@@ -1,16 +1,12 @@
-# tp_pokemon
+Funcionalidades
 
-A new Flutter project.
+Lista
+Mostrar número, sprite, nombre
 
-## Getting Started
+Detalle
 
-This project is a starting point for a Flutter application.
+Búsqueda por nombre exacto
 
-A few resources to get you started if this is your first Flutter project:
+Desafíos
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+La API de Pokemons no provee búsqueda parcial, pero sí provee GET de un Pokemon por ID o por nombre exacto, entonces decidí implementar búsqueda por nombre exacto.
