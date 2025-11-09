@@ -325,6 +325,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
       );
     }
 
+    // ListView.builder es scrolleable por defecto
     return ListView.builder(
       controller: _scrollController,
       itemCount:

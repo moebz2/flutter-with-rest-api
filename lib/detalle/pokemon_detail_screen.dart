@@ -15,6 +15,8 @@ class PokemonDetailScreen extends StatefulWidget {
 
 class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   List<String> types = [];
+  int height = 0;
+  int weight = 0;
   bool isLoading = true;
 
   @override
@@ -40,6 +42,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                     StringUtils.traducirTipo(type['type']['name'] as String),
               )
               .toList();
+          height = data['height'];
+          weight = data['weight'];
           isLoading = false;
         });
       } else {
@@ -58,10 +62,13 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(StringUtils.getNombre(widget.name))),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [_imageSection(), _textSection(context)],
+      // Hacer scrolleable por si acaso.
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [_imageSection(), _textSection(context)],
+        ),
       ),
     );
   }
@@ -86,6 +93,16 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
           const SizedBox(height: 8),
           Text(
             isLoading ? 'Tipos: Cargando...' : 'Tipos: ${types.join(', ')}',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isLoading ? 'Altura: Cargando...' : 'Altura: ${height / 10} m',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isLoading ? 'Peso: Cargando...' : 'Peso: ${weight / 10} kg',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
         ],
