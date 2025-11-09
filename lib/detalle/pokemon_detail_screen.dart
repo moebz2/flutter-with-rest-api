@@ -17,35 +17,6 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   List<String> types = [];
   bool isLoading = true;
 
-  // PokeAPI provee un endpoint de traducción,
-  // pero son muy pocos tipos para andar llamando a otro endpoint,
-  // entonces se traduce
-  // localmente nomás.
-  final Map<String, String> typeTranslations = {
-    'normal': 'Normal',
-    'fire': 'Fuego',
-    'water': 'Agua',
-    'electric': 'Eléctrico',
-    'grass': 'Planta',
-    'ice': 'Hielo',
-    'fighting': 'Lucha',
-    'poison': 'Veneno',
-    'ground': 'Tierra',
-    'flying': 'Volador',
-    'psychic': 'Psíquico',
-    'bug': 'Bicho', // xD
-    'rock': 'Roca',
-    'ghost': 'Fantasma',
-    'dragon': 'Dragón',
-    'dark': 'Siniestro',
-    'steel': 'Acero',
-    'fairy': 'Hada',
-  };
-
-  String _translateType(String englishType) {
-    return typeTranslations[englishType] ?? englishType;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -65,7 +36,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         setState(() {
           types = typesData
               .map<String>(
-                (type) => _translateType(type['type']['name'] as String),
+                (type) =>
+                    StringUtils.traducirTipo(type['type']['name'] as String),
               )
               .toList();
           isLoading = false;
@@ -89,77 +61,80 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
+        children: [_imageSection(), _textSection(context)],
+      ),
+    );
+  }
+
+  Padding _textSection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              Center(
-                child: Container(
-                  width: 300,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.grey.shade100,
-                  ),
-                  child: Image.network(
-                    // Imagen grande
-                    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${widget.id}.png',
-                    fit: BoxFit.contain,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return const Center(child: CircularProgressIndicator());
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.image_not_supported,
-                              size: 64,
-                              color: Colors.grey.shade400,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Image not available',
-                              style: TextStyle(color: Colors.grey.shade600),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
+          const SizedBox(height: 24),
+          Text(
+            'Número: ${widget.id}',
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(height: 24),
-                Text(
-                  'Número: ${widget.id}',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Nombre: ${StringUtils.getNombre(widget.name)}",
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  isLoading
-                      ? 'Tipos: Cargando...'
-                      : 'Tipos: ${types.join(', ')}',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ],
-            ),
+          const SizedBox(height: 8),
+          Text(
+            "Nombre: ${StringUtils.getNombre(widget.name)}",
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isLoading ? 'Tipos: Cargando...' : 'Tipos: ${types.join(', ')}',
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
         ],
       ),
+    );
+  }
+
+  Center _imageSection() {
+    return Center(
+      child: Container(
+        width: 300,
+        height: 300,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Colors.grey.shade100,
+        ),
+        child: _bigImage(),
+      ),
+    );
+  }
+
+  Image _bigImage() {
+    return Image.network(
+      // Imagen grande
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${widget.id}.png',
+      fit: BoxFit.contain,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return const Center(child: CircularProgressIndicator());
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.image_not_supported,
+                size: 64,
+                color: Colors.grey.shade400,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Imagen no disponible',
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
