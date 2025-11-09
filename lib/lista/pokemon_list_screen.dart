@@ -253,44 +253,47 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment:
-            MainAxisAlignment.start, // Change from center to start
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      hintText: 'Buscar por nombre',
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(),
-                    ),
-                    onSubmitted: (_) => _performSearch(),
+      body: _searchSection(),
+    );
+  }
+
+  Column _searchSection() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  decoration: const InputDecoration(
+                    hintText: 'Buscar por nombre',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(),
                   ),
+                  onSubmitted: (_) => _performSearch(),
                 ),
-                const SizedBox(width: 8),
-                SizedBox(
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _performSearch,
-                    child: const Text('Buscar'),
-                  ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: _performSearch,
+                  child: const Text('Buscar'),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: _refreshPokemon,
-              child: _buildList(),
-            ),
+        ),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: _refreshPokemon,
+            child: _buildList(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
