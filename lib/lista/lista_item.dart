@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../detalle/screen.dart';
-import '../utils/string_utils.dart';
+import '../../detalle/screen.dart';
+import '../../utils/string_utils.dart';
 
 class ListaItemWidget extends StatelessWidget {
   final String name;
