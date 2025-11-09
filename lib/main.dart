@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:tp_pokemon/models/pokemon.dart';
+import 'package:tp_pokemon/models/pokemon_list_response.dart';
 import 'lista_item.dart';
 import 'error_msg.dart';
 
@@ -10,53 +13,13 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pokémon List',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const PokemonListScreen(),
-    );
-  }
-}
-
-class Pokemon {
-  final String name;
-  final String url;
-
-  Pokemon({required this.name, required this.url});
-
-  factory Pokemon.fromJson(Map<String, dynamic> json) {
-    return Pokemon(name: json['name'], url: json['url']);
-  }
-
-  int get id {
-    final parts = url.split('/');
-    return int.parse(parts[parts.length - 2]);
-  }
-}
-
-class PokemonListResponse {
-  final int count;
-  final String? next;
-  final String? previous;
-  final List<Pokemon> results;
-
-  PokemonListResponse({
-    required this.count,
-    this.next,
-    this.previous,
-    required this.results,
-  });
-
-  factory PokemonListResponse.fromJson(Map<String, dynamic> json) {
-    return PokemonListResponse(
-      count: json['count'],
-      next: json['next'],
-      previous: json['previous'],
-      results: (json['results'] as List)
-          .map((pokemon) => Pokemon.fromJson(pokemon))
-          .toList(),
     );
   }
 }
@@ -110,6 +73,8 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
           'https://pokeapi.co/api/v2/pokemon?limit=$limit&offset=$currentOffset',
         ),
       );
+
+      debugPrint('_loadPokemon.response: ${response.body}');
 
       if (response.statusCode == 200) {
         final pokemonResponse = PokemonListResponse.fromJson(
@@ -214,7 +179,11 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
 
         final pokemon = pokemonList[index];
 
-        return ListaItemWidget(name: pokemon.name, id: pokemon.id);
+        return ListaItemWidget(
+          name: pokemon.name,
+          // Dart automáticamente ejecuta el getter de id
+          id: pokemon.id,
+        );
       },
     );
   }

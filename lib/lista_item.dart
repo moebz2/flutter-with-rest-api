@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import '../detalle/screen.dart';
+import '../utils/string_utils.dart';
 
 class ListaItemWidget extends StatelessWidget {
   final String name;
   final int id;
 
-  const ListaItemWidget({
-    super.key,
-    required this.name,
-    required this.id,
-  });
+  const ListaItemWidget({super.key, required this.name, required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -42,13 +39,7 @@ class ListaItemWidget extends StatelessWidget {
             },
           ),
         ),
-        title: Text(
-          name
-              .split('-')
-              .map((word) => word[0].toUpperCase() + word.substring(1))
-              .join(' '),
-          style: const TextStyle(fontWeight: FontWeight.w500),
-        ),
+        title: Text("#$id - ${StringUtils.getNombre(name)}"),
         onTap: () {
           Navigator.push(
             context,
