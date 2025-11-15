@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:tp_pokemon/lista/empty_msg.dart';
 import 'dart:convert';
@@ -9,6 +10,9 @@ import 'package:tp_pokemon/models/pokemon_list_response.dart';
 import 'lista_item.dart';
 import 'error_msg.dart';
 import 'loading_msg.dart';
+
+import 'package:tp_pokemon/theme/theme_provider.dart';
+
 
 class PokemonListScreen extends StatefulWidget {
   const PokemonListScreen({super.key});
@@ -257,6 +261,17 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
               onPressed: _clearSearch,
               tooltip: 'Limpiar búsqueda',
             ),
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, child) {
+              return IconButton(
+                icon: Icon(
+                  themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                ),
+                onPressed: () => themeProvider.toggleTheme(),
+                tooltip: themeProvider.isDarkMode ? 'Modo claro' : 'Modo oscuro',
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _refreshPokemon,
