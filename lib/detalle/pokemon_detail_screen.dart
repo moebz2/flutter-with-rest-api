@@ -81,29 +81,30 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text(
-            'Número: ${widget.id}',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
+          _characteristicRow(context, Icons.tag, 'Número: ${widget.id}'),
           const SizedBox(height: 8),
-          Text(
+          _characteristicRow(
+            context,
+            Icons.catching_pokemon,
             "Nombre: ${StringUtils.getNombre(widget.name)}",
-            style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 8),
-          Text(
+          _characteristicRow(
+            context,
+            Icons.category,
             isLoading ? 'Tipos: Cargando...' : 'Tipos: ${types.join(', ')}',
-            style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 8),
-          Text(
+          _characteristicRow(
+            context,
+            Icons.height,
             isLoading ? 'Altura: Cargando...' : 'Altura: ${height / 10} m',
-            style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 8),
-          Text(
+          _characteristicRow(
+            context,
+            Icons.fitness_center,
             isLoading ? 'Peso: Cargando...' : 'Peso: ${weight / 10} kg',
-            style: Theme.of(context).textTheme.bodyLarge,
           ),
         ],
       ),
@@ -152,6 +153,19 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _characteristicRow(BuildContext context, IconData icon, String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 20, color: Theme.of(context).primaryColor),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(text, style: Theme.of(context).textTheme.bodyLarge),
+        ),
+      ],
     );
   }
 }

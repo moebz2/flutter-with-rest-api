@@ -239,8 +239,16 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          isSearchMode ? 'Resultado de Búsqueda' : 'Lista de Pokemones',
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isSearchMode ? Icons.search : Icons.catching_pokemon,
+              size: 24,
+            ),
+            const SizedBox(width: 8),
+            Text(isSearchMode ? 'Búsqueda' : 'Pokemones'),
+          ],
         ),
         actions: [
           if (isSearchMode)
@@ -293,7 +301,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
             height: 56,
             child: ElevatedButton(
               onPressed: _performSearch,
-              child: const Text('Buscar'),
+              child: const Icon(Icons.search),
             ),
           ),
         ],

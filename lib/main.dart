@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tp_pokemon/lista/pokemon_list_screen.dart';
 
 void main() {
@@ -16,10 +17,41 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         primaryColor: const Color(0xFF87CEEB),
         scaffoldBackgroundColor: const Color(0xFFF8F9FA),
-        appBarTheme: const AppBarTheme(
+        textTheme: GoogleFonts.shareTechTextTheme(Theme.of(context).textTheme)
+            .copyWith(
+              headlineLarge: GoogleFonts.pressStart2p(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+              headlineMedium: GoogleFonts.pressStart2p(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              headlineSmall: GoogleFonts.pressStart2p(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              titleLarge: GoogleFonts.pressStart2p(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              titleMedium: GoogleFonts.pressStart2p(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+              titleSmall: GoogleFonts.pressStart2p(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+        appBarTheme: AppBarTheme(
           backgroundColor: Color(0xFF87CEEB),
           foregroundColor: Colors.white,
           elevation: 2,
+          titleTextStyle: GoogleFonts.pressStart2p(
+            color: Colors.white,
+            fontSize: 16, // Reduced from 20
+          ),
         ),
         cardTheme: const CardThemeData(
           color: Color(0xFFF0F8FF),
@@ -35,6 +67,7 @@ class MyApp extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
+            textStyle: GoogleFonts.shareTech(fontSize: 16),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
@@ -48,6 +81,8 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             borderSide: const BorderSide(color: Color(0xFF87CEEB), width: 2),
           ),
+          labelStyle: GoogleFonts.shareTech(fontSize: 14),
+          hintStyle: GoogleFonts.shareTech(fontSize: 14),
         ),
         colorScheme: const ColorScheme.light(
           primary: Color(0xFF87CEEB),
