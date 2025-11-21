@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
+          debugShowCheckedModeBanner: false, // Quitar banner de debug
           title: 'Pokemones', // En dónde se ve este título??
           theme: AppThemes.lightTheme,
           darkTheme: AppThemes.darkTheme,
