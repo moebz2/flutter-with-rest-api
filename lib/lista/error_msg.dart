@@ -18,11 +18,11 @@ class ErrorMsgWidget extends StatelessWidget {
         children: [
           const Icon(Icons.error, size: 64, color: Colors.red),
           const SizedBox(height: 16),
-          Text(message ?? 'Failed to load Pokémon'),
+          Text(message ?? 'Ocurrió un error al realizar la acción'),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: onRetry,
-            child: const Text('Retry'),
+            child: const Text('Reintentar'),
           ),
         ],
       ),
