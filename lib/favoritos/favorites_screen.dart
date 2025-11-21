@@ -27,7 +27,7 @@ class FavoritesScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Agrega a favoritos desde la página de detalle',
+                    'Agrega favoritos desde la página de detalle',
                     style: TextStyle(color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
