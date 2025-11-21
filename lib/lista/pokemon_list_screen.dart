@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-import 'package:tp_pokemon/lista/empty_msg.dart';
 import 'dart:convert';
 
+import 'package:tp_pokemon/favoritos/favorites_screen.dart';
+
+import 'package:tp_pokemon/lista/empty_msg.dart';
 import 'package:tp_pokemon/models/pokemon.dart';
 import 'package:tp_pokemon/models/pokemon_list_response.dart';
 
@@ -12,7 +14,6 @@ import 'error_msg.dart';
 import 'loading_msg.dart';
 
 import 'package:tp_pokemon/theme/theme_provider.dart';
-
 
 class PokemonListScreen extends StatefulWidget {
   const PokemonListScreen({super.key});
@@ -261,6 +262,18 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
               onPressed: _clearSearch,
               tooltip: 'Limpiar búsqueda',
             ),
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FavoritesScreen(),
+                ),
+              );
+            },
+            tooltip: 'Favoritos',
+          ),
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return IconButton(
@@ -268,7 +281,9 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                   themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
                 ),
                 onPressed: () => themeProvider.toggleTheme(),
-                tooltip: themeProvider.isDarkMode ? 'Modo claro' : 'Modo oscuro',
+                tooltip: themeProvider.isDarkMode
+                    ? 'Modo claro'
+                    : 'Modo oscuro',
               );
             },
           ),

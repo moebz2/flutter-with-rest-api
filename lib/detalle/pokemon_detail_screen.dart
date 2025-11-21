@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:provider/provider.dart';
+
 import 'package:tp_pokemon/utils/string_utils.dart';
+import 'package:tp_pokemon/providers/favorites_provider.dart';
 
 class PokemonDetailScreen extends StatefulWidget {
   final int id;
@@ -61,7 +64,39 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(StringUtils.getNombre(widget.name))),
+      appBar: AppBar(
+        title: Text(StringUtils.getNombre(widget.name)),
+        actions: [
+          Consumer<FavoritesProvider>(
+            builder: (context, favoritesProvider, child) {
+              final isFavorite = favoritesProvider.isFavorite(widget.id);
+              return IconButton(
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : null,
+                ),
+                onPressed: () {
+                  favoritesProvider.toggleFavorite(widget.id, widget.name);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        isFavorite
+                            ? 'Removido de favoritos'
+                            : 'Agregado a favoritos',
+                      ),
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                },
+                tooltip: isFavorite
+                    ? 'Quitar de favoritos'
+                    : 'Agregar a favoritos',
+              );
+            },
+          ),
+        ],
+      ),
       // Hacer scrolleable por si acaso.
       body: SingleChildScrollView(
         child: Column(
