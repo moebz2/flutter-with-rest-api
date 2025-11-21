@@ -252,7 +252,12 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
               size: 24,
             ),
             const SizedBox(width: 8),
-            Text(isSearchMode ? 'Búsqueda' : 'Pokemones'),
+            Flexible(
+              child: Text(
+                isSearchMode ? 'Búsqueda' : 'Pokemones',
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
         actions: [

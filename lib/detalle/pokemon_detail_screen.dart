@@ -166,7 +166,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${widget.id}.png',
       fit: BoxFit.contain,
       loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
+        if (loadingProgress == null) {
+          return Hero(tag: 'pokemon_${widget.id}', child: child);
+        }
+
         return const Center(child: CircularProgressIndicator());
       },
       errorBuilder: (context, error, stackTrace) {

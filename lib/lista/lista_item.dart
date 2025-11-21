@@ -19,27 +19,30 @@ class ListaItemWidget extends StatelessWidget {
         leading: SizedBox(
           width: 56,
           height: 56,
-          child: Image.network(
-            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png',
-            fit: BoxFit.contain,
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return const Center(
-                child: CircularProgressIndicator(strokeWidth: 2),
-              );
-            },
-            errorBuilder: (context, error, stackTrace) {
-              return CircleAvatar(
-                backgroundColor: Colors.blue.shade100,
-                child: Text(
-                  '#$id',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+          child: Hero(
+            tag: 'pokemon_$id',
+            child: Image.network(
+              'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png',
+              fit: BoxFit.contain,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return CircleAvatar(
+                  backgroundColor: Colors.blue.shade100,
+                  child: Text(
+                    '#$id',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
         title: Text("#$id - ${StringUtils.getNombre(name)}"),
