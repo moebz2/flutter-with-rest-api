@@ -32,6 +32,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   bool isSearchMode = false;
+  bool isGridView = false;
   Pokemon? searchResult;
 
   @override
@@ -46,6 +47,12 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _toggleView() {
+    setState(() {
+      isGridView = !isGridView;
+    });
   }
 
   void _onScroll() {
@@ -249,7 +256,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
           children: [
             Icon(
               isSearchMode ? Icons.search : Icons.catching_pokemon,
-              size: 24,
+              size: 18,
             ),
             const SizedBox(width: 8),
             Flexible(
@@ -267,6 +274,11 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
               onPressed: _clearSearch,
               tooltip: 'Limpiar búsqueda',
             ),
+          IconButton(
+            icon: Icon(isGridView ? Icons.list : Icons.grid_view),
+            onPressed: _toggleView,
+            tooltip: isGridView ? 'Vista de lista' : 'Vista de cuadrícula',
+          ),
           IconButton(
             icon: const Icon(Icons.favorite),
             onPressed: () {
@@ -361,22 +373,32 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
       return EmptyMsgWidget();
     }
 
-    // ListView.builder es scrolleable por defecto
-    return ListView.builder(
+    // Single GridView.builder that adapts to list or grid
+    return GridView.builder(
       controller: _scrollController,
+      padding: const EdgeInsets.all(8),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: isGridView ? 2 : 1,
+        mainAxisExtent: isGridView
+            ? 180
+            : 80, // Fixed height: 180 for grid, 80 for list
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
       itemCount:
           displayList.length + (!isSearchMode && nextUrl != null ? 1 : 0),
       itemBuilder: (context, index) {
         if (index >= displayList.length && !isSearchMode) {
-          return const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Center(child: CircularProgressIndicator()),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         final pokemon = displayList[index];
 
-        return ListaItemWidget(name: pokemon.name, id: pokemon.id);
+        return ListaItemWidget(
+          name: pokemon.name,
+          id: pokemon.id,
+          isGridView: isGridView, // Pass the grid view state
+        );
       },
     );
   }

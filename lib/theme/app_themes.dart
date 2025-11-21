@@ -39,7 +39,7 @@ class AppThemes {
         elevation: 2,
         titleTextStyle: GoogleFonts.pressStart2p(
           color: Colors.white,
-          fontSize: 16,
+          fontSize: 12,
         ),
       ),
       cardTheme: const CardThemeData(
@@ -119,7 +119,7 @@ class AppThemes {
         elevation: 2,
         titleTextStyle: GoogleFonts.pressStart2p(
           color: Colors.white,
-          fontSize: 16,
+          fontSize: 12,
         ),
       ),
       cardTheme: const CardThemeData(
